@@ -1,0 +1,46 @@
+#Bu ödev için Afyondaki Kiralık evlerden oda sayısı, mahalle, kat sayısı, ısıtma ve m2(brüt) özellikleri ve 
+#kira fiyatları 100 ev için listelenerek DataSet oluşturulmuş.
+#Hatice Aylin Can 
+
+
+#Kütüphaneleri ekleme
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+#Verisetimizi .csv uzantısına çevirerek ekliyoruz
+dataset = pd.read_csv("C:/Users/canayPC/Desktop/houseforrent.csv")
+
+
+#Son sütun hariç tüm sütunları alıp yeni bir obje dizisi oluşturma yani şehir, yaş ve maaş ile.
+X = dataset.iloc[:, :-1].values
+
+#Son sütunu bir obje dizisinin içine atama
+y = dataset.iloc[: , 5].values
+
+#Mahalle sütunundaki kategorik verileri nümerik hale getirme
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+labelencoder_X = LabelEncoder()
+X[:, 15] = labelencoder_X.fit_transform(X[:, 15])
+onehotencoder = OneHotEncoder(categorical_features = [15])
+X = onehotencoder.fit_transform(X).toarray()
+
+#Isıtma sütunundaki kategorik verileri nümerik hale getirme
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+labelencoder_X = LabelEncoder()
+X[:, 2] = labelencoder_X.fit_transform(X[:, 2])
+onehotencoder = OneHotEncoder(categorical_features = [2])
+X = onehotencoder.fit_transform(X).toarray()
+
+# Veri setinin bağımsız değişken obje dizisini(yani X) ve bağımlı değişken obje dizisini (yani y) ayrı ayrı eğitim seti ve test seti olarak ikiye bölme
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+
+# Lineer regresyon denklemi
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()
+regressor.fit(X_train, y_train)
+
+# Test sonuçlarını tahmin etme
+y_pred = regressor.predict(X_test)
